@@ -39,8 +39,8 @@
       "type": "object",
       "title": "Rustnote Kernel configuration",
       "properties": {
-        "rustnote.go.path": {
-          "description": "Path to `go` executable",
+        "rustnote.rust.path": {
+          "description": "Path to `rust` executable",
           "type": "string",
           "scope": "window"
         },
@@ -69,18 +69,18 @@
     "commands": [
       {
         "command": "rustnote.kernel.restart",
-        "title": "Gobook: Restart Kernel",
+        "title": "Rustnote: Restart Kernel",
         "description": "Restart the running instance of the kernel"
       }
     ],
     "notebooks": [
       {
         "type": "rustnote",
-        "displayName": "Gobook",
+        "displayName": "Rustnote",
         "priority": "default",
         "selector": [
           {
-            "filenamePattern": "*.{md,markdown,rustnote}"
+            "filenamePattern": "*.{md,markdown,rs,rustnote}"
           }
         ]
       }
@@ -88,7 +88,7 @@
     "notebookRenderer": [
       {
         "id": "rustnote",
-        "displayName": "Gobook",
+        "displayName": "Rustnote",
         "entrypoint": "./dist/extension.js",
         "mimeTypes": [
           "x-application/rustnote"
@@ -99,7 +99,7 @@
       {
         "id": "rustnote",
         "aliases": [
-          "Gobook"
+          "Rustnote"
         ],
         "filenamePatterns": [
           "*.rustnote"
@@ -112,7 +112,7 @@
         "scopeName": "source.rustnote",
         "path": "./syntaxes/rustnote.tmGrammar.json",
         "embeddedLanguages": {
-          "meta.embedded.block.go": "go"
+          "meta.embedded.block.rust": "rust"
         }
       }
     ]
