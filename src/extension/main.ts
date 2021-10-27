@@ -24,7 +24,7 @@ export function activate(context: ExtensionContext) {
 	}
 
 	context.subscriptions.push(workspace.registerNotebookSerializer('rustnote', new MarkdownProvider(), notebookSettings))
-	kernel.install()
+	kernel.launch()
 }
 
 class MarkdownProvider implements NotebookSerializer {
