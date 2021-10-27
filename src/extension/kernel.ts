@@ -1,4 +1,4 @@
-import fetch from 'node-fetch'
+import * as net from "net"
 import { TextEncoder } from 'util'
 import { execSync } from 'child_process'
 import {
@@ -15,28 +15,9 @@ const presentationOptions = {
     focus: true,
 }
 
-const sendCodeCell = async (exec: NotebookCellExecution, doc: NotebookDocument): Promise<string | void> => {
-    const data = {
-        index: exec.cell.index,
-        filename: doc.uri.fsPath,
-        fragment: +exec.cell.document.uri.fragment.substring(3),
-        contents: exec.cell.document.getText(),
-        executing: true
-    }
-    return await fetch("http://127.0.0.1:8787", {
-        method: 'POST',
-        body: JSON.stringify(data),
-        timeout: 5000
-    })
-        .then(res => res.text())
-        .catch(_ => {
-            window.showWarningMessage(`Please wait for rustkernel to start`)
-        })
-}
-
 // Installs rustkernel, launches the kernel in a task, sends code to be executed, and retrieves output
 export class Kernel {
-    output = window.createOutputChannel('Go Notebook Kernel');
+    output = window.createOutputChannel('Rustkernel');
     installed = false;
     retries = 10;
     RUSTPATH = "";
@@ -48,21 +29,28 @@ export class Kernel {
             // Used for the cell timer counter
             exec.start((new Date).getTime())
             exec.clearOutput()
-            let success = false
-            let res = await sendCodeCell(exec, doc)
-            // window.showInformationMessage(`${res}`)
-            if (res || res === "") {
-                if (res.substring(0, 12) === "exit status ") {
-                    res = res.split("\n").slice(1).join("\n")
-                } else {
-                    success = true
-                }
-                this.output.appendLine(res.trim())
-                var u8 = new TextEncoder().encode(res.trim())
+
+            const dat = exec.cell.index + "\0"
+                + +exec.cell.document.uri.fragment.substring(3) + "\0"
+                + doc.uri.fsPath + "\0"
+                + exec.cell.document.getText()
+
+            const utf8 = Buffer.from(dat)
+
+            let client = new net.Socket()
+            client.connect(8787, "127.0.0.1", () => {
+                client.write(utf8)
+            })
+            client.on('data', async (data) => {
+                let sp = data.toString().split("\0")
+                let success = sp[0] ? true : false
+                let body = sp[1]
+                this.output.appendLine(body.trim())
+                var u8 = new TextEncoder().encode(body.trim())
                 const x = new NotebookCellOutputItem(u8, "text/plain")
                 await exec.appendOutput([new NotebookCellOutput([x])])
-            }
-            exec.end(success, (new Date).getTime())
+                exec.end(success, (new Date).getTime())
+            })
         }
     }
 

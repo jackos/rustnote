@@ -4,18 +4,19 @@
 
 
 
+
+
+
+
 ```rust
 println!("Wow very cool");
 ```
-```output
-Wow very cool
-```
 
 
 ```rust
-println!("Sweet as bra");
+println!("it works");
 ```
 ```output
-Sweet as bra
+it works
 ```
 
