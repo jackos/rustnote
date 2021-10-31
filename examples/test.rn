@@ -1,8 +1,10 @@
 
+
 ## Testing out markdown 
 
 
-```rs
+
+```rust
 let x = vec![2, 5, 7, 8];
 for i in x {
 	println!("Cool");
@@ -16,7 +18,7 @@ Cool
 ```
 
 
-```rs
+```rust
 println!("Super cool!");
 ```
 ```output
@@ -24,7 +26,7 @@ Super cool!
 ```
 
 
-```rs
+```rust
 println!("Wow very nice");
 ```
 ```output

@@ -1,8 +1,9 @@
 import { Socket } from "net"
+import { tmpdir } from "os"
 import { TextEncoder } from 'util'
 import {
     NotebookDocument, NotebookCell, NotebookController, tasks,
-    NotebookCellOutput, NotebookCellOutputItem, ShellExecution, Task, window, TaskScope, TaskPanelKind,
+    NotebookCellOutput, NotebookCellOutputItem, ShellExecution, Task, window, TaskScope, TaskPanelKind, workspace,
 } from 'vscode'
 
 
@@ -20,9 +21,18 @@ export class Kernel {
             let x = exec.token
 
             x.onCancellationRequested(() => exec.end(false, (new Date).getTime()))
+            let filePath
+            if (workspace.workspaceFolders) {
+                filePath = workspace.workspaceFolders[0].uri.path + '/.rustnote'
+            } else {
+                window.showWarningMessage(`You must have a folder open for all Rustnote features to work`)
+                filePath = tmpdir
+            }
+
             const dat = exec.cell.index + "\0"
                 + +exec.cell.document.uri.fragment.substring(3) + "\0"
                 + doc.uri.fsPath + "\0"
+                + filePath + "\0"
                 + exec.cell.document.getText()
 
             const utf8 = Buffer.from(dat)

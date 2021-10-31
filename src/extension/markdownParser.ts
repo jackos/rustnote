@@ -152,7 +152,7 @@ export function parseMarkdown(content: string): RawNotebookCell[] {
 
 const stringDecoder = new TextDecoder()
 export function writeCellsToMarkdown(cells: ReadonlyArray<NotebookCellData>): string {
-	let result = '\n'
+	let result = ''
 	for (let i = 0; i < cells.length; i++) {
 		const cell = cells[i]
 		if (i === 0) {
@@ -170,11 +170,11 @@ export function writeCellsToMarkdown(cells: ReadonlyArray<NotebookCellData>): st
 			}
 			const indentation = cell.metadata?.indentation || ''
 			const languageAbbrev = LANG_ABBREVS.get(cell.languageId) ?? cell.languageId
-			const codePrefix = indentation + '\n```' + languageAbbrev + '\n'
+			const codePrefix = indentation + '```' + languageAbbrev + '\n'
 			const contents = cell.value.split(/\r?\n/g)
 				.map(line => indentation + line)
 				.join('\n')
-			const codeSuffix = '\n' + indentation + '```\n'
+			const codeSuffix = '\n' + indentation + '```'
 			result += sep
 			result += codePrefix + contents + codeSuffix
 			if (outputParsed !== '' && outputParsed !== '\n' && outputParsed.length > 0) {

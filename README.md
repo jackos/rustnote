@@ -1,5 +1,3 @@
-
-
 # Rustnote: Interactive Markdown Notebook 
 ## Quickstart
 1) Create or open an existing markdown document
