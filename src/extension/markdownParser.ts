@@ -178,11 +178,11 @@ export function writeCellsToMarkdown(cells: ReadonlyArray<NotebookCellData>): st
 			result += sep
 			result += codePrefix + contents + codeSuffix
 			if (outputParsed !== '' && outputParsed !== '\n' && outputParsed.length > 0) {
-				result += '```output\n' + outputParsed
+				result += '\n```output\n' + outputParsed
 				if (outputParsed.slice(-1) !== '\n') {
 					result += '\n'
 				}
-				result += '```\n'
+				result += '```'
 			}
 			result += sep
 		} else {
