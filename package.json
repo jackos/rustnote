@@ -3,7 +3,7 @@
   "publisher": "rustnote",
   "displayName": "rustnote",
   "description": "Rust interactive notebook that executes code and saves results to markdown",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "preview": true,
   "enableProposedApi": false,
   "icon": "images/icon.png",
@@ -74,6 +74,16 @@
       }
     ],
     "notebooks": [
+      {
+        "type": "rustnote",
+        "displayName": "Rustnote",
+        "priority": "option",
+        "selector": [
+          {
+            "filenamePattern": "*.{md,markdown}"
+          }
+        ]
+      },
       {
         "type": "rustnote",
         "displayName": "Rustnote",
