@@ -32,8 +32,15 @@ export class Kernel {
                 client.write(utf8)
             })
             client.on('error', async (data) => {
-                window.showWarningMessage(`Wait for Rustkernel to install and try again. ${data}`)
-                exec.end(false, (new Date).getTime())
+                const connRefused = "connect ECONNREFUSED"
+                if (data.message.substring(0, connRefused.length - 1)) {
+                    window.showInformationMessage(`Relaunching Rustkernel, try again when running`)
+                    this.launch()
+                    exec.end(false, (new Date).getTime())
+                } else {
+                    window.showErrorMessage(`Unhandled error: ${data.message}`)
+                    exec.end(false, (new Date).getTime())
+                }
             })
             client.on('data', async (data) => {
                 let sp = data.toString().split("\0")
