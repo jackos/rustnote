@@ -19,13 +19,15 @@
 		{
 			"type": "shell",
 			"label": "rungo",
-			"options": {"cwd": "${fileDirname}"},
+			"options": {
+				"cwd": "${fileDirname}"
+			},
 			"command": "go run ${file}"
 		},
 		{
 			"label": "rustkernel-mock",
 			"type": "shell",
-			"command": "cargo install rustnote",
+			"command": "cargo install hackdown",
 			"presentation": {
 				"reveal": "always",
 				"panel": "shared",

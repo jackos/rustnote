@@ -8,10 +8,10 @@ import {
 const kernel = new Kernel()
 
 export function activate(context: ExtensionContext) {
-	const controller = notebooks.createNotebookController('rust-kernel', 'rustnote', 'Rust Kernel')
-	controller.supportedLanguages = ['rust']
+	const controller = notebooks.createNotebookController('Hackdown', 'hackdown', 'Hackdown')
+	controller.supportedLanguages = ['go', 'rust', 'javascript', 'typescript']
 	controller.executeHandler = (cells, doc, ctrl) => kernel.executeCells(doc, cells, ctrl)
-	context.subscriptions.push(commands.registerCommand('rustnote.kernel.restart', () => {
+	context.subscriptions.push(commands.registerCommand('hackdown.kernel.restart', () => {
 		window.showInformationMessage('Restarting kernel')
 	}))
 
@@ -23,8 +23,7 @@ export function activate(context: ExtensionContext) {
 		}
 	}
 
-	context.subscriptions.push(workspace.registerNotebookSerializer('rustnote', new MarkdownProvider(), notebookSettings))
-	kernel.launch()
+	context.subscriptions.push(workspace.registerNotebookSerializer('hackdown', new MarkdownProvider(), notebookSettings))
 }
 
 class MarkdownProvider implements NotebookSerializer {

@@ -1,15 +1,20 @@
 import { Socket } from "net"
 import { tmpdir } from "os"
 import { TextEncoder } from 'util'
+import { existsSync, mkdirSync, writeFile, writeFileSync } from "fs"
+import { execFileSync, spawn, spawnSync, SpawnSyncReturns } from "child_process"
+import { executeGo } from "./languages/go"
+import { executeRust } from "./languages/rust"
 import {
     NotebookDocument, NotebookCell, NotebookController, tasks,
     NotebookCellOutput, NotebookCellOutputItem, ShellExecution, Task, window, TaskScope, TaskPanelKind, workspace,
 } from 'vscode'
+import { sep } from "path"
 
 
 // Installs rustkernel, launches the kernel in a task, sends code to be executed, and retrieves output
 export class Kernel {
-    output = window.createOutputChannel('Rustkernel');
+    output = window.createOutputChannel('Hackdown');
     async executeCells(doc: NotebookDocument, cells: NotebookCell[], ctrl: NotebookController): Promise<void> {
         // this.launch()
         for (const cell of cells) {
@@ -19,77 +24,43 @@ export class Kernel {
             exec.clearOutput()
 
             let x = exec.token
-
             x.onCancellationRequested(() => exec.end(false, (new Date).getTime()))
-            let filePath
+
+            let dest = ""
             if (workspace.workspaceFolders) {
-                filePath = workspace.workspaceFolders[0].uri.path + '/.rustnote'
+                dest = workspace.workspaceFolders[0].uri.path + sep + '.hackdown'
             } else {
-                window.showWarningMessage(`You must have a folder open for all Rustnote features to work`)
-                filePath = tmpdir
+                dest = tmpdir()
+                window.showWarningMessage(`Temporary files will be saved to: ${dest}`)
             }
+            const source = doc.uri.fsPath
 
-            const dat = exec.cell.index + "\0"
-                + +exec.cell.document.uri.fragment.substring(3) + "\0"
-                + doc.uri.fsPath + "\0"
-                + filePath + "\0"
-                + exec.cell.document.getText()
+            const language = cell.document.languageId
+            const index = exec.cell.index
+            const fragment = +exec.cell.document.uri.fragment.substring(3)
+            const program = exec.cell.document.getText()
 
-            const utf8 = Buffer.from(dat)
-
-            let client = new Socket()
-            client.connect(8787, "127.0.0.1", () => {
-                client.write(utf8)
-            })
-            client.on('error', async (data) => {
-                const connRefused = "connect ECONNREFUSED"
-                if (data.message.substring(0, connRefused.length - 1)) {
-                    window.showInformationMessage(`Relaunching Rustkernel, try again when running`)
-                    this.launch()
-                    exec.end(false, (new Date).getTime())
-                } else {
-                    window.showErrorMessage(`Unhandled error: ${data.message}`)
-                    exec.end(false, (new Date).getTime())
-                }
-            })
-            client.on('data', async (data) => {
-                let sp = data.toString().split("\0")
-                let success = +sp[0] ? false : true
-                let body = sp[1]
-                this.output.appendLine(body.trim())
-                var u8 = new TextEncoder().encode(body.trim())
-                const x = new NotebookCellOutputItem(u8, "text/plain")
-                await exec.appendOutput([new NotebookCellOutput([x])])
-                exec.end(success, (new Date).getTime())
-            })
-        }
-    }
-
-    async launch() {
-        const rustkernelTask = new Task(
-            { type: 'shell' },
-            TaskScope.Workspace,
-            'rustkernel',
-            'rustkernel',
-            new ShellExecution("cargo install rustkernel && rustkernel")
-        )
-        rustkernelTask.presentationOptions = {
-            panel: TaskPanelKind.Shared,
-            showReuseMessage: false,
-            clear: false,
-            close: true,
-            focus: true,
-        }
-        // Check if task already running, don't run it if not
-        let launchTask = true
-        const runningTasks = tasks.taskExecutions
-        for (const task of runningTasks) {
-            if (task.task.name === "rustkernel") {
-                launchTask = false
+            // Output
+            this.output.appendLine(`index: ${index}\nfragment: ${fragment}\nsource: ${source}\ndest: ${dest}\nlanguage: ${language}`)
+            this.output.appendLine(program)
+            let cmd: SpawnSyncReturns<Buffer>
+            if (language === "go") {
+                cmd = executeGo(dest, program)
+            } else if (language === "rust") {
+                cmd = executeRust(dest, program)
+            } else {
+                exec.end(false, (new Date).getTime())
+                throw "Language not recognized"
             }
-        }
-        if (launchTask) {
-            tasks.executeTask(rustkernelTask)
+            if (cmd.stdout.length > 0) {
+                const output = new NotebookCellOutputItem(cmd.stdout, "text/plain")
+                exec.appendOutput([new NotebookCellOutput([output])])
+                exec.end(true, (new Date).getTime())
+            } else {
+                const output = new NotebookCellOutputItem(cmd.stderr, "text/plain")
+                exec.appendOutput([new NotebookCellOutput([output])])
+                exec.end(false, (new Date).getTime())
+            }
         }
     }
 }

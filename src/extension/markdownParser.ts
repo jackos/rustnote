@@ -1,5 +1,5 @@
 import { TextDecoder, TextEncoder } from 'util'
-import { NotebookCellKind, NotebookCellData } from 'vscode'
+import { NotebookCellData, NotebookCellKind } from 'vscode'
 
 export interface RawNotebookCell {
 	indentation?: string
@@ -16,6 +16,7 @@ const LANG_IDS = new Map([
 	['js', 'javascript'],
 	['ts', 'typescript'],
 	['rust', 'rust'],
+	['go', 'go'],
 ])
 const LANG_ABBREVS = new Map(
 	Array.from(LANG_IDS.keys()).map(k => [LANG_IDS.get(k), k])

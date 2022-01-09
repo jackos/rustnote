@@ -1,7 +1,7 @@
 {
-  "name": "rustnote",
-  "publisher": "rustnote",
-  "displayName": "rustnote",
+  "name": "hackdown",
+  "publisher": "hackdown",
+  "displayName": "hackdown",
   "description": "Rust interactive notebook that executes code and saves results to markdown",
   "version": "0.0.9",
   "preview": true,
@@ -11,21 +11,21 @@
     "rust",
     "rustlang",
     "notebook",
-    "rustnote",
+    "hackdown",
     "notebooks"
   ],
   "engines": {
     "vscode": "^1.58.0"
   },
   "repository": {
-    "url": "https://github.com/rustnote/rustnote"
+    "url": "https://github.com/hackdown/hackdown"
   },
   "categories": [
     "Notebooks"
   ],
   "activationEvents": [
-    "onNotebook:rustnote",
-    "onLanguage:rustnote"
+    "onNotebook:hackdown",
+    "onLanguage:hackdown"
   ],
   "main": "./dist/extension.js",
   "capabilities": {
@@ -37,29 +37,29 @@
   "contributes": {
     "configuration": {
       "type": "object",
-      "title": "Rustnote Kernel configuration",
+      "title": "Hackdown Kernel configuration",
       "properties": {
-        "rustnote.rust.path": {
+        "hackdown.rust.path": {
           "description": "Path to `rust` executable",
           "type": "string",
           "scope": "window"
         },
-        "rustnote.kernel.path": {
+        "hackdown.kernel.path": {
           "description": "Path to kernel executable",
           "type": "string",
           "scope": "window"
         },
-        "rustnote.kernel.module": {
+        "hackdown.kernel.module": {
           "description": "Kernel module",
           "type": "string",
           "scope": "window"
         },
-        "rustnote.kernel.version": {
+        "hackdown.kernel.version": {
           "description": "Kernel version",
           "type": "string",
           "scope": "window"
         },
-        "rustnote.kernel.tags": {
+        "hackdown.kernel.tags": {
           "description": "Tags to use when building the kernel",
           "type": "string",
           "scope": "window"
@@ -68,15 +68,15 @@
     },
     "commands": [
       {
-        "command": "rustnote.kernel.restart",
-        "title": "Rustnote: Restart Kernel",
+        "command": "hackdown.kernel.restart",
+        "title": "Hackdown: Restart Kernel",
         "description": "Restart the running instance of the kernel"
       }
     ],
     "notebooks": [
       {
-        "type": "rustnote",
-        "displayName": "Rustnote",
+        "type": "hackdown",
+        "displayName": "Hackdown",
         "priority": "option",
         "selector": [
           {
@@ -85,8 +85,8 @@
         ]
       },
       {
-        "type": "rustnote",
-        "displayName": "Rustnote",
+        "type": "hackdown",
+        "displayName": "Hackdown",
         "priority": "default",
         "selector": [
           {
@@ -97,30 +97,30 @@
     ],
     "notebookRenderer": [
       {
-        "id": "rustnote",
-        "displayName": "Rustnote",
+        "id": "hackdown",
+        "displayName": "Hackdown",
         "entrypoint": "./dist/extension.js",
         "mimeTypes": [
-          "x-application/rustnote"
+          "x-application/hackdown"
         ]
       }
     ],
     "languages": [
       {
-        "id": "rustnote",
+        "id": "hackdown",
         "aliases": [
-          "Rustnote"
+          "Hackdown"
         ],
         "filenamePatterns": [
-          "*.rustnote"
+          "*.hackdown"
         ]
       }
     ],
     "grammars": [
       {
-        "language": "rustnote",
-        "scopeName": "source.rustnote",
-        "path": "./syntaxes/rustnote.tmGrammar.json",
+        "language": "hackdown",
+        "scopeName": "source.hackdown",
+        "path": "./syntaxes/hackdown.tmGrammar.json",
         "embeddedLanguages": {
           "meta.embedded.block.rust": "rust"
         }
