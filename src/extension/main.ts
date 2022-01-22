@@ -36,7 +36,7 @@ export async function activate(context: ExtensionContext) {
 	context.subscriptions.push(workspace.registerNotebookSerializer('rustnote', new MarkdownProvider(), notebookSettings));
 
 	// Skip checking if already installed on first run, to keep kernel updated
-	await installKernel(true);
+	await installKernel();
 	runKernel();
 }
 

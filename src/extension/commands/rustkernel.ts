@@ -35,7 +35,7 @@ export let runKernel = async () => {
 
 // Checks if the kernel is installed, if not it starts a new task and installs
 // via `cargo install`
-export let installKernel = async (skipCheck = false) => {
+export let installKernel = async () => {
 	const installTask = new Task(
 		{ type: 'shell' },
 		TaskScope.Workspace,
@@ -52,7 +52,7 @@ export let installKernel = async (skipCheck = false) => {
 	};
 	let rustKernalPath = await lookpath("rustkernel");
 	return new Promise<void>(async resolve => {
-		if (rustKernalPath === undefined || skipCheck) {
+		if (rustKernalPath === undefined) {
 			window.showInformationMessage(`Installing rustkernel...`);
 			let e = await tasks.executeTask(installTask);
 			tasks.onDidEndTask(ended => {
