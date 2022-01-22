@@ -1,6 +1,6 @@
 # Change Log
 
-## v0.1.1
+## v0.1.2
 - Always keep kernel updated by running cargo on first activation
 - Fix keybindings
 

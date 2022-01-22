@@ -3,7 +3,7 @@
   "publisher": "jackos",
   "displayName": "rustnote",
   "description": "Rust interactive notebook that executes code and saves results to markdown",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "preview": false,
   "icon": "images/icon.png",
   "keywords": [
