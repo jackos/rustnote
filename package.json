@@ -1,11 +1,10 @@
 {
   "name": "rustnote",
-  "publisher": "rustnote",
+  "publisher": "jackos",
   "displayName": "rustnote",
   "description": "Rust interactive notebook that executes code and saves results to markdown",
-  "version": "0.0.9",
-  "preview": true,
-  "enableProposedApi": false,
+  "version": "0.1.0",
+  "preview": false,
   "icon": "images/icon.png",
   "keywords": [
     "rust",
@@ -15,7 +14,7 @@
     "notebooks"
   ],
   "engines": {
-    "vscode": "^1.58.0"
+    "vscode": "^1.63.0"
   },
   "repository": {
     "url": "https://github.com/rustnote/rustnote"
@@ -25,7 +24,10 @@
   ],
   "activationEvents": [
     "onNotebook:rustnote",
-    "onLanguage:rustnote"
+    "onLanguage:rustnote",
+    "onCommand:rustnote.search",
+    "onCommand:rustnote.serve",
+    "onCommand:rustnote.previewMain"
   ],
   "main": "./dist/extension.js",
   "capabilities": {
@@ -39,28 +41,8 @@
       "type": "object",
       "title": "Rustnote Kernel configuration",
       "properties": {
-        "rustnote.rust.path": {
-          "description": "Path to `rust` executable",
-          "type": "string",
-          "scope": "window"
-        },
-        "rustnote.kernel.path": {
-          "description": "Path to kernel executable",
-          "type": "string",
-          "scope": "window"
-        },
-        "rustnote.kernel.module": {
-          "description": "Kernel module",
-          "type": "string",
-          "scope": "window"
-        },
-        "rustnote.kernel.version": {
-          "description": "Kernel version",
-          "type": "string",
-          "scope": "window"
-        },
-        "rustnote.kernel.tags": {
-          "description": "Tags to use when building the kernel",
+        "rustnote.basePath": {
+          "description": "Path where searchable notes will be stored",
           "type": "string",
           "scope": "window"
         }
@@ -68,9 +50,33 @@
     },
     "commands": [
       {
-        "command": "rustnote.kernel.restart",
-        "title": "Rustnote: Restart Kernel",
-        "description": "Restart the running instance of the kernel"
+        "command": "rustnote.search",
+        "title": "Search Rust Notes",
+        "description": "Adds the rustnote directory to the workspace and opens a VS Code find in files"
+      },
+      {
+        "command": "rustnote.serve",
+        "title": "Serve Rustnote As Website",
+        "description": "Uses mdbook to serve markdown files as a static website"
+      },
+      {
+        "command": "rustnote.previewMain",
+        "title": "Open Rustnote Temp Directory",
+        "description": "Opens the temp directory rustnote is using to generate code"
+      }
+    ],
+    "keybindings": [
+      {
+        "key": "alt+f",
+        "command": "rustnote.search"
+      },
+      {
+        "key": "alt+s",
+        "command": "rustnote.serve"
+      },
+      {
+        "key": "alt+p",
+        "command": "rustnote.previewMain"
       }
     ],
     "notebooks": [
@@ -81,16 +87,6 @@
         "selector": [
           {
             "filenamePattern": "*.{md,markdown}"
-          }
-        ]
-      },
-      {
-        "type": "rustnote",
-        "displayName": "Rustnote",
-        "priority": "default",
-        "selector": [
-          {
-            "filenamePattern": "*.{rn}"
           }
         ]
       }
@@ -115,16 +111,6 @@
           "*.rustnote"
         ]
       }
-    ],
-    "grammars": [
-      {
-        "language": "rustnote",
-        "scopeName": "source.rustnote",
-        "path": "./syntaxes/rustnote.tmGrammar.json",
-        "embeddedLanguages": {
-          "meta.embedded.block.rust": "rust"
-        }
-      }
     ]
   },
   "scripts": {
@@ -139,24 +125,26 @@
     "pretest": "yarn run compile && yarn run lint",
     "test": "node ./out/test/runTest.js"
   },
-  "dependencies": {},
+  "dependencies": {
+    "lookpath": "^1.2.2"
+  },
   "devDependencies": {
-    "@types/glob": "^7.1.4",
+    "@types/glob": "^7.2.0",
     "@types/google-protobuf": "^3.15.5",
-    "@types/mocha": "^9.0.0",
-    "@types/node": "^16.6.1",
-    "@types/node-fetch": "^2.5.12",
-    "@typescript-eslint/eslint-plugin": "^4.29.2",
-    "@typescript-eslint/parser": "^4.29.2",
-    "concurrently": "^6.2.1",
-    "esbuild": "^0.12.20",
-    "eslint": "^7.32.0",
-    "glob": "^7.1.7",
+    "@types/mocha": "^9.1.0",
+    "@types/node": "^17.0.10",
+    "@types/node-fetch": "^3.0.2",
+    "@typescript-eslint/eslint-plugin": "^5.10.0",
+    "@typescript-eslint/parser": "^5.10.0",
+    "concurrently": "^7.0.0",
+    "esbuild": "^0.14.12",
+    "eslint": "^8.7.0",
+    "glob": "^7.2.0",
     "json": "^11.0.0",
-    "mocha": "^9.0.3",
-    "ovsx": "^0.2.0",
-    "typescript": "^4.3.5",
-    "vsce": "^1.100.2",
+    "mocha": "^9.1.4",
+    "ovsx": "^0.3.0",
+    "typescript": "^4.5.5",
+    "vsce": "^2.6.3",
     "vscode-test": "^1.6.1"
   }
 }

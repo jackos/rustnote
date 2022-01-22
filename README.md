@@ -1,18 +1,27 @@
 # Rustnote: Interactive Markdown Notebook 
 ## Quickstart
-1) Create or open an existing markdown document
-2) Right click the filename and select `Reopen Editor With...` and select `Rustnote`
-3) At the top left press the `+ Code` button to create a code cell
-4) Write some code like `println!("Wow it works!");` and run the cell
+- Create or open an existing markdown document
+- Right click the filename and select `Reopen Editor With...` and select `Rustnote`
+- At the top left press the `+ Code` button to create a code cell
+- Write some code like `println!("Wow it works!");` and run the cell
 
-On first run `cargo` will install and run `rustkernel` on port `8787` in a task, so you can easily stop it from the terminal. This will also reset the program state.
+## Base Path
+Base path is where you can store searchable notes, it defaults to `~/rustnote`.
+
+You can change it in File > Preferences > Settings > 'rustnote'
+
+## Keybindings
+- `alt + f` add rustnote base path folder to workspace and open search
+- `alt + p` Open `main.rs` in next tab as preview using `rust-analyzer` to get language server support
+- `alt + s` serve notes as a static website using mdbook
+
+On first run `cargo` will install and run `rustkernel` on port `8787` in a task, so you can easily stop it from the terminal, which will also reset the program state.
 
 ### Markdown
-All source code is in markdown so it can be directly uploaded to a blog site or used with a static site generator like `mdbook`, including output or errors from `rustc`.
-1) Save a document that has some output from cells
-2) Right click the filename and select `Reopen Editor With...` and select `Text Editor`
-3) There are now `output` cells containing the results of each cell
-4) Reopen with `Rustnote` and the outputs are retained.
+All source code is in markdown (CommonMark) and will render on Github
+- Save a document that has some output from cells
+- Right click the filename and select `Reopen Editor With...` and select `Text Editor`
+- There are now `output` cells containing the results of each cell
+- Reopen with `Rustnote` and the outputs are retained.
 
 ### Viewing generated source code
-The `rustkernel` task will contain output referencing `/tmp/main.rs` and `/tmp/Cargo.toml` (or whatever your system temp folder is). Ctrl+click to see the what code is being generated to return outputs.
