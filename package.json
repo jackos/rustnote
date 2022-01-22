@@ -3,7 +3,7 @@
   "publisher": "jackos",
   "displayName": "rustnote",
   "description": "Rust interactive notebook that executes code and saves results to markdown",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "preview": false,
   "icon": "images/icon.png",
   "keywords": [
@@ -26,8 +26,8 @@
     "onNotebook:rustnote",
     "onLanguage:rustnote",
     "onCommand:rustnote.search",
-    "onCommand:rustnote.serve",
-    "onCommand:rustnote.previewMain"
+    "onCommand:rustnote.preview",
+    "onCommand:rustnote.openMain"
   ],
   "main": "./dist/extension.js",
   "capabilities": {
@@ -55,12 +55,12 @@
         "description": "Adds the rustnote directory to the workspace and opens a VS Code find in files"
       },
       {
-        "command": "rustnote.serve",
-        "title": "Serve Rustnote As Website",
-        "description": "Uses mdbook to serve markdown files as a static website"
+        "command": "rustnote.preview",
+        "title": "Preview Rustnote as a Static Website",
+        "description": "Uses mdbook to preview markdown files as a static website"
       },
       {
-        "command": "rustnote.previewMain",
+        "command": "rustnote.openMain",
         "title": "Open Rustnote Temp Directory",
         "description": "Opens the temp directory rustnote is using to generate code"
       }
@@ -71,12 +71,12 @@
         "command": "rustnote.search"
       },
       {
-        "key": "alt+s",
-        "command": "rustnote.serve"
+        "key": "alt+p",
+        "command": "rustnote.preview"
       },
       {
-        "key": "alt+p",
-        "command": "rustnote.previewMain"
+        "key": "alt+o",
+        "command": "rustnote.openMain"
       }
     ],
     "notebooks": [

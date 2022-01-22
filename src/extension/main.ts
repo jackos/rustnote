@@ -8,7 +8,7 @@ import {
 	CancellationToken, NotebookSerializer, NotebookData, NotebookCellData
 } from 'vscode';
 import { installKernel, runKernel } from './commands/rustkernel';
-import { previewMain } from './commands/temp';
+import { openMain } from './commands/openMain';
 
 const kernel = new Kernel();
 
@@ -21,8 +21,8 @@ export async function activate(context: ExtensionContext) {
 		window.showInformationMessage('Restarting kernel');
 	}));
 	context.subscriptions.push(commands.registerCommand('rustnote.search', searchNotes));
-	context.subscriptions.push(commands.registerCommand('rustnote.serve', runMdbook));
-	context.subscriptions.push(commands.registerCommand('rustnote.previewMain', previewMain));
+	context.subscriptions.push(commands.registerCommand('rustnote.preview', runMdbook));
+	context.subscriptions.push(commands.registerCommand('rustnote.openMain', openMain));
 
 
 	const notebookSettings = {
@@ -35,7 +35,8 @@ export async function activate(context: ExtensionContext) {
 
 	context.subscriptions.push(workspace.registerNotebookSerializer('rustnote', new MarkdownProvider(), notebookSettings));
 
-	await installKernel();
+	// Skip checking if already installed on first run, to keep kernel updated
+	await installKernel(true);
 	runKernel();
 }
 

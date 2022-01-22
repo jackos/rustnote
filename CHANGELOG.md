@@ -1,7 +1,11 @@
 # Change Log
 
+## v0.1.1
+- Always keep kernel updated by running cargo on first activation
+- Fix keybindings
+
 ## v0.1.0
-- Added mdBook functionality to serve static website with hotkey
+- Added mdBook functionality to preview static website with hotkey
 - Added search notes functionality with hotkey
 - Same concept as Vimwiki with a dedicated folder for notes
 - Fixed async issues, will correctly wait for install and running kernel before executing cell now

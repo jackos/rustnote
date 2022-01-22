@@ -7,20 +7,20 @@ import { exec } from 'child_process';
 let output = window.createOutputChannel('Rustkernel');
 export let runMdbook = async () => {
 	await installMdbook();
-	serveMdbook();
+	previewMdbook();
 };
 
 let path = getBasePath();
 // Starts up the kernel in a task if not already running
-let serveMdbook = async () => {
-	const serveMdbook = new Task(
+let previewMdbook = async () => {
+	const previewMdbook = new Task(
 		{ type: 'shell' },
 		TaskScope.Workspace,
-		'Serve mdBook',
-		'Serve mdBook',
+		'Preview mdBook',
+		'Preview mdBook',
 		new ShellExecution(`mdbook serve ${path} -p 8789 -o`)
 	);
-	serveMdbook.presentationOptions = {
+	previewMdbook.presentationOptions = {
 		panel: TaskPanelKind.Shared,
 		showReuseMessage: false,
 		clear: false,
@@ -32,13 +32,13 @@ let serveMdbook = async () => {
 	for (const task of runningTasks) {
 		output.appendLine(`${task.task.name}`);
 		// window.showWarningMessage(`${task.task.name}`);
-		if (task.task.name === "Serve Mdbook") {
+		if (task.task.name === "Preview Mdbook") {
 			output.appendLine(`mdbook already running, not relaunching`);
 			launchTask = false;
 		}
 	}
 	if (launchTask) {
-		tasks.executeTask(serveMdbook);
+		tasks.executeTask(previewMdbook);
 		var url = 'http://localhost';
 		var start = (process.platform == 'darwin' ? 'open' : process.platform == 'win32' ? 'start' : 'xdg-open');
 		exec(start + ' ' + url);
