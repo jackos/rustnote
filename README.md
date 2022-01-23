@@ -1,3 +1,4 @@
+
 # Rustnote: Interactive Markdown Notebook 
 ## Quickstart
 - Create or open an existing markdown document
@@ -12,8 +13,8 @@ You can change it in File > Preferences > Settings > 'rustnote'
 
 ## Keybindings
 - `alt + f` add rustnote base path folder to workspace and open search
-- `alt + p` Open `main.rs` in next tab as preview using `rust-analyzer` to get language server support
-- `alt + s` serve notes as a static website using mdbook
+- `alt + o` Open `main.rs` in next tab using `rust-analyzer` for language server support
+- `alt + p` Preview notes in `base path` as a static website using mdbook. See https://rust-lang.github.io/mdBook/guide/creating.html for how this works
 
 On first run `cargo` will install and run `rustkernel` on port `8787` in a task, so you can easily stop it from the terminal, which will also reset the program state.
 
@@ -25,3 +26,4 @@ All source code is in markdown (CommonMark) and will render on Github
 - Reopen with `Rustnote` and the outputs are retained.
 
 ### Viewing generated source code
+

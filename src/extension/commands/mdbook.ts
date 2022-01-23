@@ -3,7 +3,6 @@ import { ShellExecution, Task, TaskPanelKind, tasks, TaskScope, window } from "v
 import { getBasePath } from '../config';
 import { exec } from 'child_process';
 
-
 export let runMdbook = async () => {
 	await installMdbook();
 	previewMdbook();
