@@ -4,7 +4,6 @@ import { getBasePath } from '../config';
 import { exec } from 'child_process';
 
 
-let output = window.createOutputChannel('Rustkernel');
 export let runMdbook = async () => {
 	await installMdbook();
 	previewMdbook();
@@ -30,10 +29,8 @@ let previewMdbook = async () => {
 	let launchTask = true;
 	const runningTasks = tasks.taskExecutions;
 	for (const task of runningTasks) {
-		output.appendLine(`${task.task.name}`);
 		// window.showWarningMessage(`${task.task.name}`);
 		if (task.task.name === "Preview Mdbook") {
-			output.appendLine(`mdbook already running, not relaunching`);
 			launchTask = false;
 		}
 	}
@@ -62,9 +59,9 @@ let installMdbook = async () => {
 		close: true,
 		focus: false,
 	};
-	let rustKernalPath = await lookpath("mdbook");
+	let rustKernelPath = await lookpath("mdbook");
 	return new Promise<void>(async resolve => {
-		if (rustKernalPath === undefined) {
+		if (rustKernelPath === undefined) {
 			window.showInformationMessage(`Installing mdbook...`);
 			let e = await tasks.executeTask(installTask);
 			tasks.onDidEndTask(ended => {

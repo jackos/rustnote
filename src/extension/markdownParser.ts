@@ -11,31 +11,32 @@ export interface RawNotebookCell {
 	outputs?: [any];
 }
 
+interface ICodeBlockStart {
+	langId: string;
+}
+
 const LANG_IDS = new Map([
 	['bat', 'batch'],
 	['js', 'javascript'],
 	['ts', 'typescript'],
 	['rust', 'rust'],
 ]);
+
 const LANG_ABBREVS = new Map(
 	Array.from(LANG_IDS.keys()).map(k => [LANG_IDS.get(k), k])
 );
-
-interface ICodeBlockStart {
-	langId: string;
-	indentation: string;
-}
 
 /**
  * Note - the indented code block parsing is basic. It should only be applied inside lists, indentation should be consistent across lines and
  * between the start and end blocks, etc. This is good enough for typical use cases.
  */
-function parseCodeBlockStart(line: string): ICodeBlockStart | null {
+function parseCodeBlockStart(line: string): string | null {
 	const match = line.match(/(    |\t)?```(\S*)/);
-	return match && {
-		indentation: match[1],
-		langId: match[2]
-	};
+	if (match) {
+		return match[2];
+	}
+	return null;
+
 }
 
 function isCodeBlockStart(line: string): boolean {
@@ -46,11 +47,11 @@ function isCodeBlockEndLine(line: string): boolean {
 	return !!line.match(/^\s*```/);
 }
 
-const sep = '';
 
 export function parseMarkdown(content: string): RawNotebookCell[] {
 	const lines = content.split(/\r?\n/g);
 	let cells: RawNotebookCell[] = [];
+
 	if (lines.length < 2) {
 		return cells;
 	}
@@ -59,12 +60,9 @@ export function parseMarkdown(content: string): RawNotebookCell[] {
 	// Each parse function starts with line i, leaves i on the line after the last line parsed
 	while (i < lines.length) {
 		const leadingWhitespace = i === 0 ? parseWhitespaceLines(true) : '';
-		const codeBlockMatch = parseCodeBlockStart(lines[i]);
-		if (codeBlockMatch && codeBlockMatch.langId === 'output') {
-			parseCodeBlock(leadingWhitespace, codeBlockMatch, true);
-		}
-		else if (codeBlockMatch) {
-			parseCodeBlock(leadingWhitespace, codeBlockMatch);
+		const lang = parseCodeBlockStart(lines[i]);
+		if (lang) {
+			parseCodeBlock(leadingWhitespace, lang);
 		} else {
 			parseMarkdownParagraph(leadingWhitespace);
 		}
@@ -82,14 +80,13 @@ export function parseMarkdown(content: string): RawNotebookCell[] {
 		} else {
 			end = start + nextNonWhitespaceLineOffset;
 		}
-
 		i = end;
 		const numWhitespaceLines = end - start + (isFirst || isLast ? 0 : 1);
 		return '\n'.repeat(numWhitespaceLines);
 	}
 
-	function parseCodeBlock(leadingWhitespace: string, codeBlockStart: ICodeBlockStart, output: boolean = false): void {
-		const language = LANG_IDS.get(codeBlockStart.langId) || codeBlockStart.langId;
+	function parseCodeBlock(leadingWhitespace: string, lang: string): void {
+		const language = LANG_IDS.get(lang) || lang;
 		const startSourceIdx = ++i;
 		while (true) {
 			const currLine = lines[i];
@@ -99,15 +96,13 @@ export function parseMarkdown(content: string): RawNotebookCell[] {
 				i++; // consume block end marker
 				break;
 			}
-
 			i++;
 		}
 		const textEncoder = new TextEncoder();
 		const content = lines.slice(startSourceIdx, i - 1)
-			.map(line => line.replace(new RegExp('^' + codeBlockStart.indentation), ''))
 			.join('\n');
 		const trailingWhitespace = parseWhitespaceLines(false);
-		if (output) {
+		if (lang === "output") {
 			cells[cells.length - 1].outputs = [{ items: [{ data: textEncoder.encode(content), mime: "text/plain" }] }];
 		} else {
 			cells.push({
@@ -116,7 +111,6 @@ export function parseMarkdown(content: string): RawNotebookCell[] {
 				kind: NotebookCellKind.Code,
 				leadingWhitespace: leadingWhitespace,
 				trailingWhitespace: trailingWhitespace,
-				indentation: codeBlockStart.indentation,
 			});
 		}
 	}
@@ -129,7 +123,7 @@ export function parseMarkdown(content: string): RawNotebookCell[] {
 			}
 
 			const currLine = lines[i];
-			if (currLine === '' || isCodeBlockStart(currLine)) {
+			if (isCodeBlockStart(currLine)) {
 				break;
 			}
 
@@ -152,13 +146,10 @@ export function parseMarkdown(content: string): RawNotebookCell[] {
 
 const stringDecoder = new TextDecoder();
 export function writeCellsToMarkdown(cells: ReadonlyArray<NotebookCellData>): string {
+	// Always start markdown block with a newline
 	let result = '';
 	for (let i = 0; i < cells.length; i++) {
 		const cell = cells[i];
-		if (i === 0) {
-			result += cell.metadata?.leadingWhitespace ?? '';
-		}
-
 		if (cell.kind === NotebookCellKind.Code) {
 			let outputParsed = "";
 			if (cell.outputs) {
@@ -168,14 +159,11 @@ export function writeCellsToMarkdown(cells: ReadonlyArray<NotebookCellData>): st
 					}
 				}
 			}
-			const indentation = cell.metadata?.indentation || '';
 			const languageAbbrev = LANG_ABBREVS.get(cell.languageId) ?? cell.languageId;
-			const codePrefix = indentation + '```' + languageAbbrev + '\n';
+			const codePrefix = '```' + languageAbbrev + '\n';
 			const contents = cell.value.split(/\r?\n/g)
-				.map(line => indentation + line)
 				.join('\n');
-			const codeSuffix = '\n' + indentation + '```';
-			result += sep;
+			const codeSuffix = '\n' + '```';
 			result += codePrefix + contents + codeSuffix;
 			if (outputParsed !== '' && outputParsed !== '\n' && outputParsed.length > 0) {
 				result += '\n```output\n' + outputParsed;
@@ -184,36 +172,12 @@ export function writeCellsToMarkdown(cells: ReadonlyArray<NotebookCellData>): st
 				}
 				result += '```';
 			}
-			result += sep;
 		} else {
-			result += cell.value;
+			// Puts in a full \n\n above every markdown cell in source code, which is
+			// interpreted in markdown as a single \n 
+			result += '\n' + cell.value;
 		}
-
-		result += getBetweenCellsWhitespace(cells, i);
+		result += '\n';
 	}
 	return result;
-}
-
-function getBetweenCellsWhitespace(cells: ReadonlyArray<NotebookCellData>, idx: number): string {
-	const thisCell = cells[idx];
-	const nextCell = cells[idx + 1];
-
-	if (!nextCell) {
-		return thisCell.metadata?.trailingWhitespace ?? '\n';
-	}
-
-	const trailing = thisCell.metadata?.trailingWhitespace;
-	const leading = nextCell.metadata?.leadingWhitespace;
-
-	if (typeof trailing === 'string' && typeof leading === 'string') {
-		return trailing + leading;
-	}
-
-	// One of the cells is new
-	const combined = (trailing ?? '') + (leading ?? '');
-	if (!combined || combined === '\n') {
-		return '\n\n';
-	}
-
-	return combined;
 }

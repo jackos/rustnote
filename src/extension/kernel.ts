@@ -7,7 +7,6 @@ import { installKernel, runKernel } from "./commands/rustkernel";
 
 // Installs rustkernel, launches the kernel in a task, sends code to be executed, and retrieves output
 export class Kernel {
-    output = window.createOutputChannel('Rustkernel');
     async executeCells(doc: NotebookDocument, cells: NotebookCell[], ctrl: NotebookController): Promise<void> {
         for (const cell of cells) {
 

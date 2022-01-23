@@ -1,5 +1,9 @@
 # Change Log
 
+## v0.1.4
+- Simplify and speed up markdown parsing and serialization
+- Multiple cells of markdown will now be interpreted as one big block, easier for documents without code cells
+
 ## v0.1.2
 - Always keep kernel updated by running cargo on first activation
 - Fix keybindings
