@@ -1,3 +1,4 @@
+__Deprecated for https://github.com/jackos/hackdown__
 
 # Rustnote: Interactive Markdown Notebook 
 ## Quickstart
