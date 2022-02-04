@@ -1,4 +1,4 @@
-__Deprecated for https://github.com/jackos/hackdown__
+__Deprecated for https://github.com/jackos/ultnote - support for multiple languages__
 
 # Rustnote: Interactive Markdown Notebook 
 ## Quickstart
